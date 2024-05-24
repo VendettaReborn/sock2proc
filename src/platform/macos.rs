@@ -51,6 +51,7 @@ fn find_process_name(
         }
     });
 
+    // see: https://github.com/apple-oss-distributions/xnu/blob/94d3b452840153a99b38a3a9659680b2a006908e/bsd/netinet/in_pcblist.c#L292
     let spath = match proto {
         IPPROTO_TCP => "net.inet.tcp.pcblist_n",
         IPPROTO_UDP => "net.inet.udp.pcblist_n",
@@ -70,6 +71,12 @@ fn find_process_name(
     let struct_size = STRUCT_SIZE.load(std::sync::atomic::Ordering::Relaxed);
     let item_size = struct_size + if proto == IPPROTO_TCP { 208 } else { 0 };
 
+    // see https://github.com/apple-oss-distributions/xnu/blob/94d3b452840153a99b38a3a9659680b2a006908e/bsd/netinet/in_pcb.h#L451
+    // offset of flag is 44
+    // offset of foreign port is 16
+    // offset of local port is 18
+    // end offset of foreign address is 64
+    // end offset of local address is 80
     for i in (24..buf.len()).step_by(item_size) {
         if i + item_size > buf.len() {
             break;
