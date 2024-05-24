@@ -11,6 +11,11 @@ mod linux;
 #[cfg(target_os = "linux")]
 pub use linux::FindProcImpl;
 
+#[cfg(target_os = "macos")]
+mod macos;
+#[cfg(target_os = "macos")]
+pub use macos::FindProcImpl;
+
 #[cfg(test)]
 mod tests {
 
