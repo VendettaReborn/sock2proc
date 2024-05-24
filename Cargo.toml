@@ -1,0 +1,14 @@
+[package]
+name = "sock2proc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "0.2"
+tracing = "0.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+rtnetlink = "0.14"
+netlink-packet-sock-diag = "0.4.2"
+netlink-packet-core = "0.7.0"
+netlink-sys = "0.8.6"
