@@ -16,3 +16,10 @@ netlink-sys = "0.8.6"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 sysctl = "0.5.5"
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+
+[[bench]]
+name = "bench_find_process_by_socket"
+harness = false
