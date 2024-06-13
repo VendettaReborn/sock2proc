@@ -75,11 +75,12 @@ fn resolve_uid_inode(
     // Before calling serialize, it is important to check that the buffer in
     // which we're emitting is big enough for the packet, other
     // `serialize()` panics.
-    assert_eq!(buf.len(), packet.buffer_len());
+    assert_eq!(buf.len(), packet.buffer_len(), "Buffer is too small");
 
     packet.serialize(&mut buf[..]);
 
-    if socket.send(&buf[..], 0).is_err() {
+    if let Err(e) = socket.send(&buf[..], 0) {
+        eprintln!("Failed to send packet: {:?}", e);
         return None;
     }
 
