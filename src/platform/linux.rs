@@ -16,29 +16,14 @@ use netlink_packet_sock_diag::{
 };
 use netlink_sys::{protocols::NETLINK_SOCK_DIAG, Socket, SocketAddr};
 
-use super::FindProc;
+use crate::{utils::pre_condition, NetworkProtocol};
 
-pub struct FindProcImpl;
-
-impl FindProc for FindProcImpl {
-    fn resolve(
-        src: Option<std::net::SocketAddr>,
-        dst: Option<std::net::SocketAddr>,
-        proto: i32,
-    ) -> Option<String> {
-        resolve(src, dst, proto)
-    }
-}
-
-fn resolve(
+pub fn find_process_name(
     src: Option<std::net::SocketAddr>,
     dst: Option<std::net::SocketAddr>,
-    proto: i32,
+    proto: NetworkProtocol,
 ) -> Option<String> {
-    if !crate::utils::check(src, dst) {
-        return None;
-    }
-    if proto != libc::IPPROTO_TCP || proto != libc::IPPROTO_UDP {
+    if !pre_condition(src, dst) {
         return None;
     }
 
@@ -49,7 +34,7 @@ fn resolve(
 fn resolve_uid_inode(
     src: Option<std::net::SocketAddr>,
     dst: Option<std::net::SocketAddr>,
-    proto: i32,
+    proto: NetworkProtocol,
 ) -> Option<(u32, u32)> {
     let mut socket = Socket::new(NETLINK_SOCK_DIAG).unwrap();
     let _port_number = socket.bind_auto().unwrap().port_number();
@@ -94,7 +79,7 @@ fn resolve_uid_inode(
 
     packet.serialize(&mut buf[..]);
 
-    if let Err(_) = socket.send(&buf[..], 0) {
+    if socket.send(&buf[..], 0).is_err() {
         return None;
     }
 

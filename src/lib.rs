@@ -1,5 +1,9 @@
 mod platform;
 mod utils;
 
-pub use libc::{IPPROTO_TCP, IPPROTO_UDP};
-pub use platform::{FindProc, FindProcImpl};
+#[derive(PartialEq)]
+pub enum NetworkProtocol {
+    TCP = 6,
+    UDP = 17,
+}
+pub use platform::find_process_name;
